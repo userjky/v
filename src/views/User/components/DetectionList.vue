@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, watchEffect, onMounted } from "vue";
-import { getAllProducts, getProductsByUserId, getProductsByDefectLevel } from "@/apis/detection.js";
+import { getAllProducts, getProductsByUserId, getProductsByDefectLevel,deleteBySerialNumbers  } from "@/apis/detection.js";
 import { generateReport } from "@/apis/report.js";
 
 const page = ref(1);
@@ -87,6 +87,18 @@ function onReset() {
   fetchProducts();
 }
 
+function onDelete(serialNumber) {
+  if (!confirm(`确认删除序列号为 ${serialNumber} 的产品？`)) return;
+  deleteBySerialNumbers([serialNumber])
+    .then(res => {
+      alert("删除成功");
+      fetchProducts(); // 重新加载产品数据
+    })
+    .catch(err => {
+      alert("删除失败：" + (err.response?.data || err.message));
+    });
+}
+
 // 监听页码变化，触发请求
 watchEffect(() => {
   fetchProducts();
@@ -124,7 +136,8 @@ onMounted(() => {
           <th>背面图片</th>
           <th>工号</th>
           <th>缺陷等级</th>
-          <th>操作</th>
+          <th>生成报告</th>
+           <th>操作</th>
         </tr>
       </thead>
       <tbody>
@@ -134,7 +147,8 @@ onMounted(() => {
           <td><img :src="item.backImage" alt="背面" class="img-thumb" /></td>
           <td>{{ item.userId }}</td>
           <td>{{ item.defectLevel }}</td>
-          <td><button @click="onGenerateReport(item)">生成报告</button></td>
+          <td><button @click="onGenerateReport(item)"class="green-button">生成报告</button></td>
+          <td><button @click="onDelete(item.serialNumber)"class="red-button">删除</button></td> 
         </tr>
         <tr v-if="products.length === 0">
           <td colspan="5" style="text-align:center;">暂无数据</td>
@@ -201,6 +215,30 @@ button:hover {
 button:disabled {
   background-color: #999;
   cursor: not-allowed;
+}
+.red-button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.red-button:hover {
+  background-color: darkred;
+}
+.green-button {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.green-button:hover {
+  background-color: #1e8449;
 }
 
 table {

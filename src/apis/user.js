@@ -47,3 +47,19 @@ export const getUserInfo = () => {
 //     }
 //   })
 // }
+
+export const updatePassword = (oldPassword, newPassword) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  return request({
+    url: "/user/updatePassword",
+    method: "POST",
+    headers: {
+      Authorization: user?.token || "",
+      "Content-Type": "application/json"
+    },
+    data: {
+      oldPassword,
+      newPassword
+    }
+  });
+};

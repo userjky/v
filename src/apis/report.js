@@ -82,3 +82,15 @@ export const exportReports = (reportIds) => {
     body: JSON.stringify(reportIds)
   }).then(res => res.blob());
 };
+
+export const deleteReports = (reportIds) => {
+  return request({
+    url: "/report/by-reportId",
+    method: "DELETE",
+    headers: {
+      Authorization: token(),
+      "Content-Type": "application/json"
+    },
+    data: reportIds
+  });
+};

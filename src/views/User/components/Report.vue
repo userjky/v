@@ -5,7 +5,8 @@ import {
   getReportById,
   getReportsBySerial,
   updateReportContent,
-  exportReports 
+  exportReports,
+  deleteReports 
 } from "@/apis/report.js";
 
 const reports = ref([]);
@@ -79,6 +80,19 @@ function onEdit(report) {
   editingReportId.value = report.reportId;
   newContent.value = report.content;
 }
+
+const onDelete = async (reportId) => {
+  if (!confirm(`确认删除报告ID ${reportId} 吗？`)) return;
+  try {
+    const res = await deleteReports([reportId]);
+    alert("删除成功");
+    fetchReports();
+  } catch (e) {
+    alert("删除失败：" + (e.response?.data || e.message));
+  }
+};
+
+
 // 提交修改
 async function onSubmitEdit(report) {
   const res = await updateReportContent(report.reportId, newContent.value);
@@ -143,6 +157,7 @@ onMounted(() => {
       <th>产品序列号</th>
       <th>修改</th>
       <th>导出</th>
+      <th>删除</th>
     </tr>
   </thead>
   <tbody>
@@ -168,7 +183,8 @@ onMounted(() => {
           <button @click="onEdit(report)">修改</button>
         </div>
       </td>
-      <td> <button @click="onExport(report.reportId)">导出</button></td>
+      <td> <button @click="onExport(report.reportId)"class="yellow-button">导出</button></td>
+      <td><button @click="onDelete(report.reportId)"class="red-button">删除</button></td>
     </tr>
   </tbody>
 </table>
@@ -250,6 +266,30 @@ button:hover {
 button:disabled {
   background-color: #999;
   cursor: not-allowed;
+}
+.red-button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.red-button:hover {
+  background-color: darkred;
+}
+.yellow-button {
+  background-color: #f1c40f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.yellow-button:hover {
+  background-color: #d4ac0d;
 }
 
 .filterRow {

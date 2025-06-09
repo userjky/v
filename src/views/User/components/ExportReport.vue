@@ -74,6 +74,7 @@ onMounted(() => {
           <td>{{ item.userId }}</td>
           <td>{{ item.exportedAt }}</td>
         </tr>
+        
       </tbody>
     </table>
 

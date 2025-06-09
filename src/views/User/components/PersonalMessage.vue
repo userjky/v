@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from "vue-router";
-import { getUserInfo } from "@/apis/user.js"; 
+import { getUserInfo,updatePassword  } from "@/apis/user.js"; 
 import { onMounted, ref } from "vue";
 
 const user = JSON.parse(localStorage.getItem('user'))
@@ -22,6 +22,38 @@ async function getPersonalMessage() {
 function retire() {
   localStorage.removeItem('user')
   router.push('/login')
+}
+
+const oldPassword = ref("")
+const newPassword = ref("")
+const confirmPassword = ref("")
+
+async function onChangePassword() {
+  if (!oldPassword.value || !newPassword.value || !confirmPassword.value) {
+    return alert("请填写完整的密码信息")
+  }
+
+  if (newPassword.value.length < 6 || newPassword.value.length > 13) {
+    return alert("新密码长度应在6到13位之间")
+  }
+
+  if (newPassword.value !== confirmPassword.value) {
+    return alert("两次新密码不一致")
+  }
+
+  try {
+    const res = await updatePassword(oldPassword.value, newPassword.value)
+    alert("密码修改成功，请重新登录")
+    retire()
+  } catch (e) {
+    alert("密码修改失败：" + (e.response?.data || e.message))
+  }
+}
+
+const showPasswordForm = ref(false)
+
+function togglePasswordForm() {
+  showPasswordForm.value = !showPasswordForm.value
 }
 
 onMounted(() => {
@@ -46,6 +78,20 @@ onMounted(() => {
         <span v-if="user.role === 1">操作员</span>
         <span v-else-if="user.role === 2">质检员</span>
       </div>
+      <div>
+  <button @click="togglePasswordForm">修改密码</button>
+<div v-if="showPasswordForm" class="passwordUpdateSection">
+  <div class="infoRow"><span class="label">旧密码：</span><input v-model="oldPassword" type="password" /></div>
+  <div class="infoRow"><span class="label">新密码：</span><input v-model="newPassword" type="password" /></div>
+  <div v-if="newPassword.length > 0 && (newPassword.length < 6 || newPassword.length > 13)" style="color: red; margin-left: 80px;">
+  密码长度应在6到13位之间
+</div>
+  <div class="infoRow"><span class="label">确认新密码：</span><input v-model="confirmPassword" type="password" /></div>
+  <div><button @click="onChangePassword">确认修改</button></div>
+</div>
+
+</div>
+
       <div class="retire" @click="retire">退出登录</div>
     </div>
   </div>
