@@ -19,7 +19,7 @@
   <div class="LeftMenu">
     <div  @click="goTo('/')">个人信息</div>
     <div v-if="role === 1 || role === 2" @click="goTo('/insert')">提交检测</div>
-    <div v-if=" role === 1|| role === 2"  @click="goTo('/detection2')">检测记录</div>
+    <div v-if=" role === 1"  @click="goTo('/detection2')">检测记录</div>
     <div v-if=" role === 2"  @click="goTo('/detection')">检测记录</div>
     <div v-if="role === 2" @click="goTo('/report')">查看报告</div>
     <div v-if="role === 2" @click="goTo('/ExportReport')">调取记录</div>
