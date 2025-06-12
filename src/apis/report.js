@@ -68,9 +68,27 @@ export const getReportsBySerial = (serialNumber, page = 1, pageSize = 10) => {
   });
 };
 
+
+// //仅前端测试时使用
+// export const updateReportContent = (reportId, content) => {
+//   return Promise.resolve({ data: true });
+// };
+
 export const updateReportContent = (reportId, content) => {
-  return Promise.resolve({ data: true });
+  return request({
+    url: "/report/change",
+    method: "PUT",
+    headers: {
+      Authorization: token(),
+      "Content-Type": "application/json"
+    },
+    data: {
+      reportId,
+      content
+    }
+  });
 };
+
 
 // 导出报告为 CSV
 export const exportReports = (reportIds) => {

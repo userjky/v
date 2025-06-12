@@ -65,6 +65,8 @@ const insert = async () => {
 </script>
 
 <template>
+  
+  <div class="rightMain">
   <div class="insertContainer">
     <table>
       <thead>
@@ -102,18 +104,24 @@ const insert = async () => {
       <button @click="insert">上传</button>
     </div>
   </div>
+  </div>
 </template>
 
 
 <style scoped>
-.insertContainer {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
+.rightMain {
+  flex: 1;        
+   padding: 20px 50px 20px 350px;
   box-sizing: border-box;
+  overflow-y: auto;
 }
-
+.insertContainer {
+  width: 100%;          
+  height: 100%;         
+  padding: 20px 0 0 0;  
+  box-sizing: border-box;
+  overflow-y: auto;     
+}
 table {
   width: 100%;
   border-collapse: collapse;

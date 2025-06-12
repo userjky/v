@@ -24,8 +24,8 @@ import LeftMenu from "@/components/LeftMenu.vue";
 }
 
 .rightMain {
-  width: 84%;
-  padding: 20px;
+  flex: 1;        
+  padding: 20px 50px 20px 350px;
   box-sizing: border-box;
   overflow-y: auto;
 }

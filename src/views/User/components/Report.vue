@@ -24,22 +24,43 @@ const editingReportId = ref(null);
 const newContent = ref("");
 
 const fetchReports = async () => {
-  if (queryType.value === "id") {
-    if (!reportIdQuery.value) return alert("请输入报告ID");
-    const res = await getReportById(reportIdQuery.value);
-    reports.value = [res.data];
-    total.value = 1;
-  } else if (queryType.value === "serial") {
-    if (!serialQuery.value) return alert("请输入序列号");
-    const res = await getReportsBySerial(serialQuery.value, page.value, pageSize.value);
-    reports.value = res.data.data;
-    total.value = res.data.total;
-  } else {
-    const res = await getAllReports(page.value, pageSize.value);
-    reports.value = res.data.data;
-    total.value = res.data.total;
+  let timeoutHandle;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutHandle = setTimeout(() => {
+      reject(new Error("查询超时，请稍后重试"));
+    }, 3000); // 3 秒后触发超时
+  });
+
+  try {
+    let fetchPromise;
+
+    if (queryType.value === "id") {
+      if (!reportIdQuery.value) return alert("请输入报告ID");
+      fetchPromise = getReportById(reportIdQuery.value).then(res => {
+        reports.value = [res.data];
+        total.value = 1;
+      });
+    } else if (queryType.value === "serial") {
+      if (!serialQuery.value) return alert("请输入序列号");
+      fetchPromise = getReportsBySerial(serialQuery.value, page.value, pageSize.value).then(res => {
+        reports.value = res.data.data;
+        total.value = res.data.total;
+      });
+    } else {
+      fetchPromise = getAllReports(page.value, pageSize.value).then(res => {
+        reports.value = res.data.data;
+        total.value = res.data.total;
+      });
+    }
+
+    await Promise.race([fetchPromise, timeoutPromise]); // 竞速超时机制
+  } catch (e) {
+    alert(e.message || "查询失败，请稍后重试");
+  } finally {
+    clearTimeout(timeoutHandle); // 如果成功获取数据则取消超时提示
   }
 };
+
 
 function onQueryById() {
   queryType.value = "id";
@@ -59,12 +80,14 @@ function onReset() {
   serialQuery.value = "";
   page.value = 1;
   fetchReports();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function goPrev() {
   if (page.value > 1) {
     page.value--;
     fetchReports();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 
@@ -95,15 +118,22 @@ const onDelete = async (reportId) => {
 
 // 提交修改
 async function onSubmitEdit(report) {
-  const res = await updateReportContent(report.reportId, newContent.value);
-  if (res.data === true) {
-    report.content = newContent.value;
-    editingReportId.value = null;
-    alert("修改成功");
-  } else {
-    alert("修改失败");
+  try {
+    const res = await updateReportContent(report.reportId, newContent.value);
+    if (res.data === true) {
+      report.content = newContent.value;
+      editingReportId.value = null;
+      alert("修改成功");
+    } else {
+      alert("修改失败，页面即将刷新");
+      location.reload();
+    }
+  } catch (e) {
+    alert("修改异常：" + (e.response?.data || e.message) + "，页面即将刷新");
+    location.reload();
   }
 }
+
 
 const onExport = async (reportId) => {
   try {
@@ -127,9 +157,8 @@ onMounted(() => {
 </script>
 
 <template>
-  
+   <div class="rightMain">
   <div class="insertContainer">
-  <div class="reportContainer">
     <div class="filterRow">
       <div>
         <label>报告ID：</label>
@@ -146,48 +175,55 @@ onMounted(() => {
       </div>
     </div>
 
-    <table>
+  <table class="report-table">
   <thead>
     <tr>
-      <th>报告ID</th>
-      <th>内容</th>
-      <th>创建时间</th>
-      <th>正面图</th>
-      <th>背面图</th>
-      <th>产品序列号</th>
-      <th>修改</th>
-      <th>导出</th>
-      <th>删除</th>
+      <th colspan="2">产品</th>
+      <th class="action-header">操作</th>
     </tr>
   </thead>
   <tbody>
-    <tr v-for="report in reports" :key="report.reportId">
-      <td>
-        {{ report.reportId }}
-      </td>
-      <td>
-        <div v-if="editingReportId === report.reportId">
-          <input v-model="newContent" style="width: 10em;" />
-        </div>
-        <div v-else>{{ report.content }}</div>
-      </td>
-      <td>{{ report.createdAt }}</td>
-      <td><img :src="report.frontDefectImg" class="img-thumb" /></td>
-      <td><img :src="report.backDefectImg" class="img-thumb" /></td>
-      <td>{{ report.serialNumber }}</td>
-      <td>
-        <div v-if="editingReportId === report.reportId">
-          <button @click="onSubmitEdit(report)">确认</button>
-        </div>
-        <div v-else>
-          <button @click="onEdit(report)">修改</button>
-        </div>
-      </td>
-      <td> <button @click="onExport(report.reportId)"class="yellow-button">导出</button></td>
-      <td><button @click="onDelete(report.reportId)"class="red-button">删除</button></td>
-    </tr>
+    <template v-for="report in reports" :key="report.reportId">
+      <tr>
+        <td colspan="2">
+          <div>报告ID：{{ report.reportId }}</div>
+          <div>创建时间：{{ report.createdAt }}</div>
+          <div>产品序列号：{{ report.serialNumber }}</div>
+        </td>
+       <td :rowspan="3" class="action-column">
+  <div v-if="editingReportId === report.reportId" class="button-group">
+    <button @click="onSubmitEdit(report)">确认</button>
+  </div>
+  <div v-else class="button-group">
+    <button @click="onEdit(report)">修改</button>
+  </div>
+  <div class="button-group">
+    <button @click="onExport(report.reportId)" class="yellow-button">导出</button>
+  </div>
+  <div class="button-group">
+    <button @click="onDelete(report.reportId)" class="red-button">删除</button>
+  </div>
+</td>
+      </tr>
+
+      <tr>
+        <td><div>正面图：<img :src="report.frontDefectImg" class="img-thumb" /></div></td>
+        <td><div>背面图：<img :src="report.backDefectImg" class="img-thumb" /></div></td>
+      </tr>
+
+      <tr>
+        <td colspan="2">
+          <div>内容：</div>
+          <div v-if="editingReportId === report.reportId">
+            <input v-model="newContent" style="width: 100%;" />
+          </div>
+          <div v-else>{{ report.content }}</div>
+        </td>
+      </tr>
+    </template>
   </tbody>
 </table>
+
 
 
     <div class="pagination">
@@ -201,12 +237,27 @@ onMounted(() => {
 
 
 <style scoped>
-.insertContainer {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
+.rightMain {
+  flex: 1;        
+   padding: 20px 50px 20px 350px;
   box-sizing: border-box;
+  overflow-y: auto;
+}
+.insertContainer {
+  width: 100%;          
+  height: 100%;         
+  padding: 20px 0 0 0;  
+  box-sizing: border-box;
+  overflow-y: auto;     
+}
+
+.report-table {
+  margin: 0 auto;
+  width: 1000px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin-top: 20px;
+  font-size: 14px;
 }
 
 table {
@@ -250,7 +301,7 @@ input[type="number"] {
 }
 
 button {
-  padding: 8px 20px;
+  padding: 8px 16px;
   font-size: 14px;
   background-color: royalblue;
   color: white;
@@ -298,12 +349,21 @@ button:disabled {
   gap: 30px;
   align-items: center;
   flex-wrap: wrap;
+   justify-content: center;
 }
 
 .filterRow > div {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  font-size: 14px;
 }
 </style>
 

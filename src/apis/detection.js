@@ -15,38 +15,38 @@ export const insertProductData = (formData) => {
 };
 
 
-//仅前端测试时使用
-export const getAllProducts = (page = 1, pageSize = 10) => {
-  const total = 25;
-  const products = Array.from({ length: total }, (_, i) => ({
-    serialNumber: `SN-${i + 1}`,
-    frontImage: `/Background.png`,
-    backImage: `/Background.png`,
-    userId: `user-${(i % 5) + 1}`,
-    defectLevel: (i % 3) + 1
-  }));
-
-  const start = (page - 1) * pageSize;
-  const paginated = products.slice(start, start + pageSize);
-
-  return Promise.resolve({
-    data: {
-      data: paginated,
-      total
-    }
-  });
-};
-
-
+// //仅前端测试时使用
 // export const getAllProducts = (page = 1, pageSize = 10) => {
-//   const user = JSON.parse(localStorage.getItem("user") || '{}');
-//   return request({
-//     url: `${BASE_URL}/all`,
-//     method: "GET",
-//     headers: { Authorization: user.token || "" },
-//     params: { page, pageSize },
+//   const total = 25;
+//   const products = Array.from({ length: total }, (_, i) => ({
+//     serialNumber: `SN-${i + 1}`,
+//     frontImage: `/Background.png`,
+//     backImage: `/Background.png`,
+//     userId: `user-${(i % 5) + 1}`,
+//     defectLevel: (i % 3) + 1
+//   }));
+
+//   const start = (page - 1) * pageSize;
+//   const paginated = products.slice(start, start + pageSize);
+
+//   return Promise.resolve({
+//     data: {
+//       data: paginated,
+//       total
+//     }
 //   });
 // };
+
+
+export const getAllProducts = (page = 1, pageSize = 10) => {
+  const user = JSON.parse(localStorage.getItem("user") || '{}');
+  return request({
+    url: `${BASE_URL}/all`,
+    method: "GET",
+    headers: { Authorization: user.token || "" },
+    params: { page, pageSize },
+  });
+};
 
 
 export const getProductsByUserId = (userId, page = 1, pageSize = 10) => {
@@ -58,6 +58,30 @@ export const getProductsByUserId = (userId, page = 1, pageSize = 10) => {
     params: { userId, page, pageSize },
   });
 };
+
+
+
+// //仅前端测试时使用
+// export const getProductsByUserId = (page = 1, pageSize = 10) => {
+//   const total = 25;
+//   const products = Array.from({ length: total }, (_, i) => ({
+//     serialNumber: `SN-${i + 1}`,
+//     frontImage: `/Background.png`,
+//     backImage: `/Background.png`,
+//     userId: `user-${(i % 5) + 1}`,
+//     defectLevel: (i % 3) + 1
+//   }));
+
+//   const start = (page - 1) * pageSize;
+//   const paginated = products.slice(start, start + pageSize);
+
+//   return Promise.resolve({
+//     data: {
+//       data: paginated,
+//       total
+//     }
+//   });
+// };
 
 export const getProductsByDefectLevel = (defectLevel, page = 1, pageSize = 10) => {
   const user = JSON.parse(localStorage.getItem("user") || '{}');

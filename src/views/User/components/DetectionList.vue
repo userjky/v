@@ -110,6 +110,7 @@ onMounted(() => {
 </script>
 
 <template>
+   <div class="rightMain">
   <div class="insertContainer">
   <div class="detectionList">
     <div class="filterRow">
@@ -163,21 +164,31 @@ onMounted(() => {
     </div>
   </div>
   </div>
+   </div>
 </template>
 
 <style scoped>
-.insertContainer {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
+.rightMain {
+  flex: 1;        
+   padding: 20px 50px 20px 350px;
   box-sizing: border-box;
+  overflow-y: auto;
 }
+.insertContainer {
+  width: 100%;          
+  height: 100%;         
+  padding: 20px 0 0 0;  
+  box-sizing: border-box;
+  overflow-y: auto;     
+}
+
 
 .filterRow {
   margin-bottom: 20px;
   display: flex;
   gap: 30px;
+  
+  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -270,5 +281,4 @@ th, td {
   gap: 15px;
   font-size: 14px;
 }
-
 </style>
