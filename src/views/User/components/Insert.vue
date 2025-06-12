@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import{insertProductData} from "@/apis/detection.js"; 
 
 const user = JSON.parse(localStorage.getItem("user") || '{}');
 
@@ -48,28 +49,19 @@ const insert = async () => {
   formData.append("backImage", backImageFile.value);
 
   try {
-    const res = await fetch("/detection/insert-image", {
-      method: "POST",
-      headers: {
-        Authorization: user.token || ''
-      },
-      body: formData
-    });
-
-    if (res.ok) {
-      alert("图片上传成功");
-      frontImageFile.value = null;
-      backImageFile.value = null;
-      frontImagePreview.value = '';
-      backImagePreview.value = '';
-    } else {
-      alert("上传失败");
-    }
+    await insertProductData(formData);
+    alert("图片上传成功");
+    frontImageFile.value = null;
+    backImageFile.value = null;
+    frontImagePreview.value = '';
+    backImagePreview.value = '';
   } catch (err) {
-    alert("请求异常");
+    alert("上传失败");
     console.error(err);
   }
 };
+
+
 </script>
 
 <template>

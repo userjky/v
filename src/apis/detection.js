@@ -8,7 +8,7 @@ export const insertProductData = (formData) => {
     url: '/detection/insert-image',
     method: 'POST',
     headers: {
-      'Authorization': user.token || ''
+      Authorization: user.token || ''
     },
     data: formData
   });
