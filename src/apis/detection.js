@@ -20,8 +20,8 @@ export const insertProductData = (formData) => {
 //   const total = 25;
 //   const products = Array.from({ length: total }, (_, i) => ({
 //     serialNumber: `SN-${i + 1}`,
-//     frontImage: `/Background.png`,
-//     backImage: `/Background.png`,
+//     frontImage: `/image.png`,
+//     backImage: `/image.png`,
 //     userId: `user-${(i % 5) + 1}`,
 //     defectLevel: (i % 3) + 1
 //   }));
@@ -66,8 +66,8 @@ export const getProductsByUserId = (userId, page = 1, pageSize = 10) => {
 //   const total = 25;
 //   const products = Array.from({ length: total }, (_, i) => ({
 //     serialNumber: `SN-${i + 1}`,
-//     frontImage: `/Background.png`,
-//     backImage: `/Background.png`,
+//     frontImage: `/image.png`,
+//     backImage: `/image.png`,
 //     userId: `user-${(i % 5) + 1}`,
 //     defectLevel: (i % 3) + 1
 //   }));

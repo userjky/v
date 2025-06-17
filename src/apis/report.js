@@ -24,8 +24,8 @@ export const getAllReports = (page = 1, pageSize = 10) => {
     reportId: i + 1,
     content: `报告内容概要${i + 1}`,
     createdAt: `2025-06-${(i % 30) + 1} 10:00:00`,
-    frontDefectImg: "/Background.png",
-    backDefectImg: "/Background.png",
+    frontDefectImg: "/image.png",
+    backDefectImg: "/image.png",
     serialNumber: `product-${(i % 10) + 1}`
   }));
 
@@ -69,25 +69,25 @@ export const getReportsBySerial = (serialNumber, page = 1, pageSize = 10) => {
 };
 
 
-// //仅前端测试时使用
-// export const updateReportContent = (reportId, content) => {
-//   return Promise.resolve({ data: true });
-// };
-
+//仅前端测试时使用
 export const updateReportContent = (reportId, content) => {
-  return request({
-    url: "/report/change",
-    method: "PUT",
-    headers: {
-      Authorization: token(),
-      "Content-Type": "application/json"
-    },
-    data: {
-      reportId,
-      content
-    }
-  });
+  return Promise.resolve({ data: true });
 };
+
+// export const updateReportContent = (reportId, content) => {
+//   return request({
+//     url: "/report/change",
+//     method: "PUT",
+//     headers: {
+//       Authorization: token(),
+//       "Content-Type": "application/json"
+//     },
+//     data: {
+//       reportId,
+//       content
+//     }
+//   });
+// };
 
 
 // 导出报告为 CSV

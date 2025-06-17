@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import{insertProductData} from "@/apis/detection.js"; 
+import { insertProductData } from "@/apis/detection.js";
 
 const user = JSON.parse(localStorage.getItem("user") || '{}');
 
@@ -8,6 +8,10 @@ const frontImageFile = ref(null);
 const backImageFile = ref(null);
 const frontImagePreview = ref('');
 const backImagePreview = ref('');
+const loading = ref(false);
+const message = ref('');
+const showMessage = ref(false);
+const icon = ref('');
 
 const handleFrontChange = (e) => {
   const file = e.target.files[0];
@@ -48,64 +52,82 @@ const insert = async () => {
   formData.append("frontImage", frontImageFile.value);
   formData.append("backImage", backImageFile.value);
 
+  loading.value = true;
+  showMessage.value = true;
+  icon.value = '⌛';
+  message.value = '上传中...';
+
   try {
     await insertProductData(formData);
-    alert("图片上传成功");
+    icon.value = '✅';
+    message.value = '图片上传成功';
     frontImageFile.value = null;
     backImageFile.value = null;
     frontImagePreview.value = '';
     backImagePreview.value = '';
   } catch (err) {
-    alert("上传失败");
+    icon.value = '❌';
+    message.value = '上传失败';
     console.error(err);
+  } finally {
+    loading.value = false;
+    setTimeout(() => {
+      showMessage.value = false;
+      message.value = '';
+      icon.value = '';
+    }, 12000);
   }
 };
-
-
 </script>
-
 <template>
-  
   <div class="rightMain">
-  <div class="insertContainer">
-    <table>
-      <thead>
-        <tr>
-          <th>操作员</th>
-          <th>{{ user.id }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>正面图片</td>
-          <td>
-            <div class="image-upload">
-              <input type="file" accept="image/*" @change="handleFrontChange" />
-              <div v-if="frontImagePreview" class="preview">
-                <img :src="frontImagePreview" alt="正面预览" />
+    <div class="insertContainer">
+      <div v-if="showMessage" class="overlay">
+        <div class="dialog">
+          <span class="icon">{{ icon }}</span>
+          <span class="text">{{ message }}</span>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>操作员</th>
+            <th>{{ user.id }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>正面图片</td>
+            <td>
+              <div class="image-upload">
+                <input type="file" accept="image/*" @change="handleFrontChange" />
+                <div v-if="frontImagePreview" class="preview">
+                  <img :src="frontImagePreview" alt="正面预览" />
+                </div>
               </div>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>反面图片</td>
-          <td>
-            <div class="image-upload">
-              <input type="file" accept="image/*" @change="handleBackChange" />
-              <div v-if="backImagePreview" class="preview">
-                <img :src="backImagePreview" alt="反面预览" />
+            </td>
+          </tr>
+          <tr>
+            <td>反面图片</td>
+            <td>
+              <div class="image-upload">
+                <input type="file" accept="image/*" @change="handleBackChange" />
+                <div v-if="backImagePreview" class="preview">
+                  <img :src="backImagePreview" alt="反面预览" />
+                </div>
               </div>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="btnWrapper">
-      <button @click="insert">上传</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="btnWrapper">
+        <button @click="insert">上传</button>
+      </div>
     </div>
   </div>
-  </div>
 </template>
+
 
 
 <style scoped>
@@ -175,4 +197,33 @@ button {
 button:hover {
   background-color: #1a4dbb;
 }
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.dialog {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.icon {
+  font-size: 24px;
+}
+.text {
+  font-weight: bold;
+}
+
 </style>

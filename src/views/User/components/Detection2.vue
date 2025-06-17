@@ -268,8 +268,8 @@ th, td {
 }
 
 .img-thumb {
-  max-width: 150px;
-  max-height: 120px;
+  max-width: 120px;
+  max-height: 100px;
   object-fit: contain;
   border: 1px solid #ccc;
   border-radius: 5px;
