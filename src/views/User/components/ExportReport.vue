@@ -31,8 +31,8 @@ const fetchAll = async () => {
   loading.value = true;
   try {
     const res = await withTimeout(getAllExportRecords(page.value, pageSize.value));
-    exportList.value = res.data.data;
-    total.value = res.data.total;
+    exportList.value = res.data;
+    total.value = res.total;
     currentMode.value = "all";
   } catch (e) {
     alert(e.message || "加载失败");
@@ -40,6 +40,7 @@ const fetchAll = async () => {
     loading.value = false;
   }
 };
+
 
 const searchByUserId = async () => {
   if (!userId.value) return;
