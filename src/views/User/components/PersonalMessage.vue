@@ -15,7 +15,7 @@ function goToLogin() {
 async function getPersonalMessage() {
   if (user) {
     const res = await getUserInfo()
-    personalMessage.value = res
+    personalMessage.value = res.data
   }
 }
 

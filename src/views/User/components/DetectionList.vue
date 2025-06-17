@@ -187,6 +187,7 @@ onMounted(() => {
   margin-bottom: 20px;
   display: flex;
   gap: 30px;
+  
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
@@ -265,8 +266,8 @@ th, td {
 }
 
 .img-thumb {
-  max-width: 120px;
-  max-height: 100px;
+  max-width: 150px;
+  max-height: 120px;
   object-fit: contain;
   border: 1px solid #ccc;
   border-radius: 5px;

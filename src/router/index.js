@@ -16,7 +16,7 @@ const router = createRouter({
 export default router
 
 // 路由前置守卫，用来检查路由是否匹配
-// router.beforeEach((to, from, next) => {
-//     console.log('Navigating to:', to.fullPath);  // 打印目标路径
-//     next();  // 必须调用 next() 以继续导航
-// });
+router.beforeEach((to, from, next) => {
+    console.log('Navigating to:', to.fullPath);  // 打印目标路径
+    next();  // 必须调用 next() 以继续导航
+});

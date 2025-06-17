@@ -34,7 +34,7 @@ async function fetchProducts() {
   loading.value = true;
   try {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const res = await withTimeout(getProductsByUserId(user.id, page.value, pageSize.value));
+    const res = await withTimeout(getProductsByUserId(user.id,page.value, pageSize.value));
     products.value = res.data.data || [];
     total.value = res.data.total || 0;
   } catch (e) {
@@ -43,7 +43,6 @@ async function fetchProducts() {
     loading.value = false;
   }
 }
-
 
 async function onDefectLevelSearch() {
   if (!defectLevelQuery.value || isNaN(defectLevelQuery.value)) {
@@ -268,8 +267,8 @@ th, td {
 }
 
 .img-thumb {
-  max-width: 120px;
-  max-height: 100px;
+  max-width: 150px;
+  max-height: 120px;
   object-fit: contain;
   border: 1px solid #ccc;
   border-radius: 5px;

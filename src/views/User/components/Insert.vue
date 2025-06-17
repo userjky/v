@@ -75,7 +75,7 @@ const insert = async () => {
       showMessage.value = false;
       message.value = '';
       icon.value = '';
-    }, 12000);
+    }, 19000);
   }
 };
 </script>

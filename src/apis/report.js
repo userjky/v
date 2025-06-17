@@ -18,38 +18,38 @@ export const generateReport = (item) => {
 
 
 // 仅前端测试时使用
-export const getAllReports = (page = 1, pageSize = 10) => {
-  const total = 23;
-  const reports = Array.from({ length: total }, (_, i) => ({
-    reportId: i + 1,
-    content: `报告内容概要${i + 1}`,
-    createdAt: `2025-06-${(i % 30) + 1} 10:00:00`,
-    frontDefectImg: "/image.png",
-    backDefectImg: "/image.png",
-    serialNumber: `product-${(i % 10) + 1}`
-  }));
-
-  const start = (page - 1) * pageSize;
-  const paginated = reports.slice(start, start + pageSize);
-
-  return Promise.resolve({
-    data: {
-      data: paginated,
-      total
-    }
-  });
-};
-
-
-
 // export const getAllReports = (page = 1, pageSize = 10) => {
-//   return request({
-//     url: "/report/page",
-//     method: "GET",
-//     headers: { Authorization: token() },
-//     params: { page, pageSize }
+//   const total = 23;
+//   const reports = Array.from({ length: total }, (_, i) => ({
+//     reportId: i + 1,
+//     content: `报告内容概要${i + 1}`,
+//     createdAt: `2025-06-${(i % 30) + 1} 10:00:00`,
+//     frontDefectImg: "/Background.png",
+//     backDefectImg: "/Background.png",
+//     serialNumber: `product-${(i % 10) + 1}`
+//   }));
+//
+//   const start = (page - 1) * pageSize;
+//   const paginated = reports.slice(start, start + pageSize);
+//
+//   return Promise.resolve({
+//     data: {
+//       data: paginated,
+//       total
+//     }
 //   });
 // };
+
+
+
+export const getAllReports = (page = 1, pageSize = 10) => {
+  return request({
+    url: "/report/page",
+    method: "GET",
+    headers: { Authorization: token() },
+    params: { page, pageSize }
+  });
+};
 
 export const getReportById = (reportId) => {
   return request({
@@ -69,25 +69,25 @@ export const getReportsBySerial = (serialNumber, page = 1, pageSize = 10) => {
 };
 
 
-//仅前端测试时使用
-export const updateReportContent = (reportId, content) => {
-  return Promise.resolve({ data: true });
-};
-
+// //仅前端测试时使用
 // export const updateReportContent = (reportId, content) => {
-//   return request({
-//     url: "/report/change",
-//     method: "PUT",
-//     headers: {
-//       Authorization: token(),
-//       "Content-Type": "application/json"
-//     },
-//     data: {
-//       reportId,
-//       content
-//     }
-//   });
+//   return Promise.resolve({ data: true });
 // };
+
+export const updateReportContent = (reportId, content) => {
+  return request({
+    url: "/report/change",
+    method: "PUT",
+    headers: {
+      Authorization: token(),
+      "Content-Type": "application/json"
+    },
+    data: {
+      reportId,
+      content
+    }
+  });
+};
 
 
 // 导出报告为 CSV
