@@ -15,6 +15,9 @@ const defectLevelQuery = ref("");
 const products = ref([]);
 const total = ref(0);
 const loading = ref(false);
+const showImage = ref(false)
+const currentImageUrl = ref("")
+
 
 async function withTimeout(promise, timeout = 3000) {
   let timer;
@@ -60,6 +63,10 @@ async function onDefectLevelSearch() {
   } finally {
     loading.value = false;
   }
+}
+const enlargeImage = (url) => {
+  currentImageUrl.value = url
+  showImage.value = true
 }
 
 function onReset() {
@@ -146,8 +153,9 @@ onMounted(() => {
         <tbody>
           <tr v-for="item in products" :key="item.serialNumber">
             <td>{{ item.serialNumber }}</td>
-            <td><img :src="item.frontImage" alt="正面" class="img-thumb" /></td>
-            <td><img :src="item.backImage" alt="背面" class="img-thumb" /></td>
+            <td> <img :src="item.frontImage"alt="正面"class="img-thumb"@click="enlargeImage(item.frontImage)"/></td>
+            <td><img :src="item.backImage"alt="背面"class="img-thumb"@click="enlargeImage(item.backImage)"/></td>
+
             <td>{{ item.userId }}</td>
             <td>{{ item.defectLevel }}</td>
             <td><button @click="onGenerateReport(item)" class="green-button">生成报告</button></td>
@@ -165,6 +173,10 @@ onMounted(() => {
         <button :disabled="page >= Math.ceil(total / pageSize)" @click="page++">下一页</button>
       </div>
     </div>
+    <div v-if="showImage" class="modal-overlay" @click="showImage = false">
+  <img :src="currentImageUrl" class="modal-image" />
+</div>
+
   </div>
   </div>
 </template>
@@ -199,6 +211,27 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
 }
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  cursor: zoom-out;
+}
+
+.modal-image {
+  max-width: 80%;
+  max-height: 80%;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
 
 input[type="text"],
 input[type="number"] {

@@ -13,6 +13,9 @@ const reports = ref([]);
 const total = ref(0);
 const page = ref(1);
 const pageSize = ref(10);
+const showImage = ref(false)
+const currentImageUrl = ref("")
+
 
 const reportIdQuery = ref("");
 const serialQuery = ref("");
@@ -98,6 +101,12 @@ function goNext() {
     fetchReports();
   }
 }
+//点击放大方法
+const enlargeImage = (url) => {
+  currentImageUrl.value = url
+  showImage.value = true
+}
+
 // 点击修改按钮
 function onEdit(report) {
   editingReportId.value = report.reportId;
@@ -207,8 +216,8 @@ onMounted(() => {
       </tr>
 
       <tr>
-        <td><div>正面图：<img :src="report.frontDefectImg" class="img-thumb" /></div></td>
-        <td><div>背面图：<img :src="report.backDefectImg" class="img-thumb" /></div></td>
+        <td><div>正面图：<img :src="report.frontDefectImg" class="img-thumb"@click="enlargeImage(report.frontDefectImg)"/></div></td>
+        <td><div>背面图：<img :src="report.backDefectImg"class="img-thumb"@click="enlargeImage(report.backDefectImg)"/></div></td>
       </tr>
 
       <tr>
@@ -231,6 +240,10 @@ onMounted(() => {
       <span>第 {{ page }} 页 / 共 {{ Math.ceil(total / pageSize) }} 页</span>
       <button :disabled="page >= Math.ceil(total / pageSize)" @click="goNext">下一页</button>
     </div>
+    <div v-if="showImage" class="modal-overlay" @click="showImage = false">
+  <img :src="currentImageUrl" class="modal-image" />
+</div>
+
   </div>
   </div>
 </template>
@@ -282,12 +295,32 @@ th {
 }
 
 .img-thumb {
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 240px;
+  max-height: 270px;
   object-fit: contain;
   border: 1px solid #ccc;
   border-radius: 6px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  cursor: zoom-out;
+}
+
+.modal-image {
+  max-width: 80%;
+  max-height: 80%;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
 input[type="text"],
@@ -365,5 +398,10 @@ button:disabled {
   gap: 15px;
   font-size: 14px;
 }
+.action-header {
+  width: 80px; 
+  padding: 5px;
+}
+
 </style>
 

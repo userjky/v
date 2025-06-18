@@ -17,21 +17,21 @@ export const generateReport = (item) => {
 };
 
 
-// 仅前端测试时使用
+// // 仅前端测试时使用
 // export const getAllReports = (page = 1, pageSize = 10) => {
 //   const total = 23;
 //   const reports = Array.from({ length: total }, (_, i) => ({
 //     reportId: i + 1,
 //     content: `报告内容概要${i + 1}`,
 //     createdAt: `2025-06-${(i % 30) + 1} 10:00:00`,
-//     frontDefectImg: "/Background.png",
-//     backDefectImg: "/Background.png",
+//     frontDefectImg: "/image.png",
+//     backDefectImg: "/image.png",
 //     serialNumber: `product-${(i % 10) + 1}`
 //   }));
-//
+
 //   const start = (page - 1) * pageSize;
 //   const paginated = reports.slice(start, start + pageSize);
-//
+
 //   return Promise.resolve({
 //     data: {
 //       data: paginated,

@@ -57,27 +57,56 @@ const insert = async () => {
   icon.value = '⌛';
   message.value = '上传中...';
 
+  let timeoutTimer = null;
+  let clearMessageTimer = null;
+
   try {
+    // 设置最多30秒的上传等待
+    timeoutTimer = setTimeout(() => {
+      loading.value = false;
+      icon.value = '❌';
+      message.value = '上传超时';
+      clearMessageTimer = setTimeout(() => {
+        showMessage.value = false;
+        icon.value = '';
+        message.value = '';
+      }, 5000);
+    }, 30000);
+
     await insertProductData(formData);
+
+    clearTimeout(timeoutTimer); // 成功上传前取消超时处理
+
+    // 上传成功后的提示
     icon.value = '✅';
     message.value = '图片上传成功';
     frontImageFile.value = null;
     backImageFile.value = null;
     frontImagePreview.value = '';
     backImagePreview.value = '';
-  } catch (err) {
-    icon.value = '❌';
-    message.value = '上传失败';
-    console.error(err);
-  } finally {
-    loading.value = false;
-    setTimeout(() => {
+
+    clearMessageTimer = setTimeout(() => {
       showMessage.value = false;
       message.value = '';
       icon.value = '';
-    }, 30000);
+    }, 3000);
+  } catch (err) {
+    clearTimeout(timeoutTimer);
+
+    icon.value = '❌';
+    message.value = '上传失败';
+    console.error(err);
+
+    clearMessageTimer = setTimeout(() => {
+      showMessage.value = false;
+      message.value = '';
+      icon.value = '';
+    }, 3000);
+  } finally {
+    loading.value = false;
   }
 };
+
 </script>
 <template>
   <div class="rightMain">
