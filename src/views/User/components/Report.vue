@@ -144,19 +144,45 @@ async function onSubmitEdit(report) {
 }
 
 
-const onExport = async (reportId) => {
+// ✅ 存储勾选的报告ID
+const selectedReportIds = ref([]);
+
+const toggleSelect = (id) => {
+  const index = selectedReportIds.value.indexOf(id);
+  if (index >= 0) {
+    selectedReportIds.value.splice(index, 1);
+  } else {
+    selectedReportIds.value.push(id);
+  }
+};
+
+const toggleSelectAll = () => {
+  if (selectedReportIds.value.length === reports.value.length && reports.value.length > 0) {
+    selectedReportIds.value = [];
+  } else {
+    selectedReportIds.value = reports.value.map(r => r.reportId);
+  }
+};
+
+const onExportSelected = async () => {
+  if (selectedReportIds.value.length === 0) {
+    alert("请至少勾选一个要导出的报告");
+    return;
+  }
+
   try {
-    const blob = await exportReports([reportId]);
+    const blob = await exportReports(selectedReportIds.value);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `report_${reportId}.csv`;
+    a.download = `reports_${Date.now()}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    selectedReportIds.value = [];
   } catch (e) {
-    alert("导出失败");
+    alert("导出失败：" + (e.message || "未知错误"));
   }
 };
 
@@ -181,6 +207,12 @@ onMounted(() => {
       </div>
       <div>
         <button @click="onReset">重置</button>
+      </div>
+      <div style="margin: 10px 0; display: flex; gap: 10px;">
+        <button @click="onExportSelected" class="yellow-button">导出所选报告</button>
+        <button @click="toggleSelectAll" class="yellow-button">
+          {{ selectedReportIds.length === reports.length && reports.length > 0 ? "取消全选" : "全选当前页" }}
+        </button>
       </div>
     </div>
 
@@ -207,10 +239,15 @@ onMounted(() => {
     <button @click="onEdit(report)">修改</button>
   </div>
   <div class="button-group">
-    <button @click="onExport(report.reportId)" class="yellow-button">导出</button>
+    <button @click="onDelete(report.reportId)" class="red-button">删除</button>
   </div>
   <div class="button-group">
-    <button @click="onDelete(report.reportId)" class="red-button">删除</button>
+    <div class="export-checkbox"><span class="yellow-button">添加导出</span><input
+      type="checkbox"
+      :value="report.reportId"
+      :checked="selectedReportIds.includes(report.reportId)"
+      @change="toggleSelect(report.reportId)"
+    /></div>
   </div>
 </td>
       </tr>
@@ -252,7 +289,7 @@ onMounted(() => {
 <style scoped>
 .rightMain {
   flex: 1;        
-   padding: 20px 50px 20px 350px;
+   padding: 20px 50px 20px 320px;
   box-sizing: border-box;
   overflow-y: auto;
 }
@@ -375,6 +412,14 @@ button:disabled {
 .yellow-button:hover {
   background-color: #d4ac0d;
 }
+.export-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;    
+  margin-left: 20px;   
+  justify-content: center;
+}
 
 .filterRow {
   margin-bottom: 20px;
@@ -399,9 +444,11 @@ button:disabled {
   font-size: 14px;
 }
 .action-header {
-  width: 80px; 
+  width: 150px; 
   padding: 5px;
 }
-
+.button-group {
+  margin-bottom: 10px;
+}
 </style>
 

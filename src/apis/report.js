@@ -17,39 +17,39 @@ export const generateReport = (item) => {
 };
 
 
-// // 仅前端测试时使用
-// export const getAllReports = (page = 1, pageSize = 10) => {
-//   const total = 23;
-//   const reports = Array.from({ length: total }, (_, i) => ({
-//     reportId: i + 1,
-//     content: `报告内容概要${i + 1}`,
-//     createdAt: `2025-06-${(i % 30) + 1} 10:00:00`,
-//     frontDefectImg: "/image.png",
-//     backDefectImg: "/image.png",
-//     serialNumber: `product-${(i % 10) + 1}`
-//   }));
-
-//   const start = (page - 1) * pageSize;
-//   const paginated = reports.slice(start, start + pageSize);
-
-//   return Promise.resolve({
-//     data: {
-//       data: paginated,
-//       total
-//     }
-//   });
-// };
-
-
-
+// 仅前端测试时使用
 export const getAllReports = (page = 1, pageSize = 10) => {
-  return request({
-    url: "/report/page",
-    method: "GET",
-    headers: { Authorization: token() },
-    params: { page, pageSize }
+  const total = 23;
+  const reports = Array.from({ length: total }, (_, i) => ({
+    reportId: i + 1,
+    content: `报告内容概要${i + 1}`,
+    createdAt: `2025-06-${(i % 30) + 1} 10:00:00`,
+    frontDefectImg: "/image.png",
+    backDefectImg: "/image.png",
+    serialNumber: `product-${(i % 10) + 1}`
+  }));
+
+  const start = (page - 1) * pageSize;
+  const paginated = reports.slice(start, start + pageSize);
+
+  return Promise.resolve({
+    data: {
+      data: paginated,
+      total
+    }
   });
 };
+
+
+
+// export const getAllReports = (page = 1, pageSize = 10) => {
+//   return request({
+//     url: "/report/page",
+//     method: "GET",
+//     headers: { Authorization: token() },
+//     params: { page, pageSize }
+//   });
+// };
 
 export const getReportById = (reportId) => {
   return request({
@@ -92,14 +92,26 @@ export const updateReportContent = (reportId, content) => {
 
 // 导出报告为 CSV
 export const exportReports = (reportIds) => {
+  const payload = JSON.stringify(reportIds);
+  console.log("导出请求 reportIds:", reportIds);
+  console.log("导出请求 JSON.stringify 后内容:", payload);
+
   return fetch("/report/export", {
     method: "POST",
     headers: {
-      Authorization: token()
+      Authorization: token(),
+      "Content-Type": "application/json" // 建议加上，明示是 JSON
     },
-    body: JSON.stringify(reportIds)
-  }).then(res => res.blob());
+    body: payload
+  }).then(res => {
+    console.log("fetch 返回响应对象:", res);
+    if (!res.ok) {
+      throw new Error(`导出失败，状态码：${res.status}`);
+    }
+    return res.blob();
+  });
 };
+
 
 export const deleteReports = (reportIds) => {
   return request({
